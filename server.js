@@ -3,8 +3,9 @@ const bodyParser = require('body-parser')
 const cors = require('cors');
 const redis = require('redis');
 let data = {}
-let publisher = redis.createClient(process.argv[2])
-let subscriber = redis.createClient(process.argv[2])
+console.log(process.argv[2])
+let publisher = redis.createClient(6379,process.argv[2])
+let subscriber = redis.createClient(6379,process.argv[2])
 
 subscriber.subscribe('notification');
 subscriber.on('message', (channel, dataRedis)=> {
