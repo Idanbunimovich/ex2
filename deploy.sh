@@ -57,7 +57,7 @@ echo "New instance $INSTANCE_ID @ $PUBLIC_IP"
 echo "setup production environment"
 ssh -i $KEY_PEM -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP1 <<EOF
     sudo apt update
-    sudo apt install redis -y
+    sudo apt install redis-server -y
     redis-server &
     exit
 EOF

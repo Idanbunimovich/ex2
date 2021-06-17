@@ -4,8 +4,8 @@ const cors = require('cors');
 const redis = require('redis');
 let data = {}
 console.log(process.argv[2])
-let publisher = redis.createClient(6379,process.argv[2])
-let subscriber = redis.createClient(6379,process.argv[2])
+let publisher = redis.createClient(6379,'54.161.77.107')
+let subscriber = redis.createClient(6379,'54.161.77.107')
 
 subscriber.subscribe('notification');
 subscriber.on('message', (channel, dataRedis)=> {
