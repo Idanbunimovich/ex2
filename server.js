@@ -33,7 +33,7 @@ app.post('/put',(req,res)=>{
     }
 })
 
-app.post('/get',(req,res)=>{
+app.get('/get',(req,res)=>{
     let {key} = req.body
     if(data[key]){
         res.json(data[key])

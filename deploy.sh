@@ -23,15 +23,15 @@ echo "My IP: $MY_IP"
 echo "setup rule allowing SSH access to $MY_IP only"
 aws ec2 authorize-security-group-ingress        \
     --group-name $SEC_GRP --port 22 --protocol tcp \
-    --cidr $MY_IP/32
+    --cidr "0.0.0.0"/32
 echo "setup rule allowing SSH access to $MY_IP only"
 aws ec2 authorize-security-group-ingress        \
     --group-name $SEC_GRP --port 3000 --protocol tcp \
-    --cidr $MY_IP/32
+    --cidr "0.0.0.0"/32
 echo "setup rule allowing SSH access to $MY_IP only"
 aws ec2 authorize-security-group-ingress        \
     --group-name $SEC_GRP --port 6379 --protocol tcp \
-    --cidr $MY_IP/32
+    --cidr "0.0.0.0"/32
 
 UBUNTU_20_04_AMI="ami-042e8287309f5df03"
 
