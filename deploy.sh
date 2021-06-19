@@ -56,9 +56,19 @@ echo "New instance $INSTANCE_ID @ $PUBLIC_IP"
 
 echo "setup production environment"
 ssh -i $KEY_PEM -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP1 <<EOF
+    echo "New instance $INSTANCE_ID @ $PUBLIC_IP1"
     sudo apt update
+    sudo apt install curl -y
+    sudo apt install screen -y
+    curl -fsSL https://deb.nodesource.com/setup_15.x | sudo -E bash -
+    sudo apt install nodejs -y
+    sudo apt install git -y
     sudo apt install redis-server -y
     redis-server &
+    git clone https://github.com/Idanbunimovich/ex2.git
+    cd ex2
+    npm install 
+    nohup node server.js $PUBLIC_IP1 >> app.log 2>&1 &
     exit
 EOF
 UBUNTU_20_04_AMI="ami-042e8287309f5df03"
@@ -83,15 +93,18 @@ echo "New instance $INSTANCE_ID @ $PUBLIC_IP"
 
 echo "setup production environment"
 ssh -i $KEY_PEM -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP <<EOF
+    echo "New instance $INSTANCE_ID @ $PUBLIC_IP1"
     sudo apt update
     sudo apt install curl -y
     curl -fsSL https://deb.nodesource.com/setup_15.x | sudo -E bash -
     sudo apt install nodejs -y
     sudo apt install git -y
+    sudo apt install redis-server -y
+    redis-server &
     git clone https://github.com/Idanbunimovich/ex2.git
     cd ex2
-    npm install $PUBLIC_IP1
-    npm start
+    npm install 
+    nohup node server.js $PUBLIC_IP1 >> app.log 2>&1 &
     exit
 EOF
 
@@ -117,58 +130,29 @@ echo "New instance $INSTANCE_ID @ $PUBLIC_IP"
 
 echo "setup production environment"
 ssh -i $KEY_PEM -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP <<EOF
+    echo "New instance $INSTANCE_ID @ $PUBLIC_IP1"
     sudo apt update
     sudo apt install curl -y
     curl -fsSL https://deb.nodesource.com/setup_15.x | sudo -E bash -
     sudo apt install nodejs -y
     sudo apt install git -y
+    sudo apt install redis-server -y
+    redis-server &
     git clone https://github.com/Idanbunimovich/ex2.git
     cd ex2
-    npm install $PUBLIC_IP1
-    npm start
+    npm install 
+    nohup node server.js $PUBLIC_IP1 >> app.log 2>&1 &
     exit
 EOF
 
 
 
-echo "Creating Ubuntu 20.04 instance..."
-RUN_INSTANCES=$(aws ec2 run-instances   \
-    --image-id $UBUNTU_20_04_AMI        \
-    --instance-type t3.micro            \
-    --key-name $KEY_NAME                \
-    --security-groups $SEC_GRP)
-
-INSTANCE_ID=$(echo $RUN_INSTANCES | jq -r '.Instances[0].InstanceId')
-
-echo "Waiting for instance creation..."
-aws ec2 wait instance-running --instance-ids $INSTANCE_ID
-
-PUBLIC_IP=$(aws ec2 describe-instances  --instance-ids $INSTANCE_ID | 
-    jq -r '.Reservations[0].Instances[0].PublicIpAddress'
-)
-
-NET_ID=$(aws ec2 describe-instances  --instance-ids $INSTANCE_ID | 
-    jq -r '.Reservations[0].Instances[0].SubnetId'
-)
-
-echo "New instance $INSTANCE_ID @ $PUBLIC_IP"
 
 
-echo "setup production environment"
-ssh -i $KEY_PEM -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP <<EOF
-    sudo apt update
-    sudo apt install curl -y
-    curl -fsSL https://deb.nodesource.com/setup_15.x | sudo -E bash -
-    sudo apt install nodejs -y
-    sudo apt install git -y
-    git clone https://github.com/Idanbunimovich/ex2.git
-    cd ex2
-    npm install $PUBLIC_IP1
-    npm start
-    exit
-EOF
-
-aws elb create-load-balancer --load-balancer-name my-load-balancer --listeners "Protocol=HTTP,LoadBalancerPort=3000,InstanceProtocol=HTTP,InstancePort=3000" --subnets $NET_ID --security-groups $SEC_GRP
+aws elb create-load-balancer --load-balancer-name my-load-balancer \
+--listeners "Protocol=HTTP,LoadBalancerPort=3000,InstanceProtocol=HTTP,InstancePort=3000" \
+--subnets $NET_ID \
+--security-groups $SEC_GRP
 
 
 echo "test that it all worked"
