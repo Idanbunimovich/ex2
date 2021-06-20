@@ -9,7 +9,9 @@ let subscriber = redis.createClient(6379,process.argv[2])
 
 subscriber.subscribe('notification');
 subscriber.on('message', (channel, dataRedis)=> {
+        console.log('sdf')
         let dataParsed = JSON.parse(dataRedis)
+        console.log(dataParsed)
         data[dataParsed.key] = dataParsed.value
     })
 
